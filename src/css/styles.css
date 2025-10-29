@@ -49,7 +49,7 @@
     }
 }
 
-/* レスポンシブ対応 */
+/* レスポンシブ対応（Tailwind CSS の md ブレイクポイントに合わせて 768px を使用） */
 @media (max-width: 768px) {
     .container {
         padding-left: 1rem;
