@@ -1,7 +1,15 @@
 // Azure Speech Service を使用した 1 on 1 タイマーアプリケーション
 // Speaker Diarization（話者分離）機能を使用して、マネージャーと部下の発話時間を計測
 
+// ⚠️ セキュリティ警告：このアプリケーションは技術デモ用のサンプルです
+// 本番環境では、APIキーをクライアントサイドに露出させず、バックエンドAPIを経由してください
+
 console.log('=== 1 on 1 タイマーアプリケーション 起動 ===');
+
+// 定数定義
+const TICKS_PER_SECOND = 10000000; // Azure Speech SDK の時間単位（100ns単位から秒への変換）
+const MANAGER_RATIO_HIGH_THRESHOLD = 70; // マネージャー発話比率の上限閾値（%）
+const MANAGER_RATIO_LOW_THRESHOLD = 30; // マネージャー発話比率の下限閾値（%）
 
 // グローバル変数
 let speechConfig = null;
@@ -250,7 +258,7 @@ function setupTranscriberEventHandlers() {
         if (e.result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
             const speakerId = e.result.speakerId;
             const text = e.result.text;
-            const duration = e.result.duration / 10000000; // 100ns単位から秒に変換
+            const duration = e.result.duration / TICKS_PER_SECOND; // Azure SDK の時間単位から秒に変換
             
             console.log('=== 認識完了 ===');
             console.log(`話者ID: ${speakerId}`);
@@ -545,11 +553,11 @@ function updateAdvice(managerRatio) {
     let advice = '';
     let shouldShow = false;
     
-    if (managerRatio > 70) {
+    if (managerRatio > MANAGER_RATIO_HIGH_THRESHOLD) {
         advice = '⚠️ マネージャーの発話時間が多すぎます。もっと部下の話を聞くようにしましょう。1on1では部下が主役です。';
         shouldShow = true;
         console.log('アドバイス: マネージャー発話過多');
-    } else if (managerRatio < 30) {
+    } else if (managerRatio < MANAGER_RATIO_LOW_THRESHOLD) {
         advice = '💡 マネージャーの発話時間が少なすぎます。もっといろいろな話をして、部下をサポートしましょう。';
         shouldShow = true;
         console.log('アドバイス: マネージャー発話不足');
